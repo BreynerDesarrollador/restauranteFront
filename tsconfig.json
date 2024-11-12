@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "noEmit": false,
+    "baseUrl": ".", // Añade esta línea
+    "paths": {
+      "@/*": ["src/*"],
+      "@componentes/*": ["src/componentes/*"],
+      "@assets/*": ["src/assets/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@servicios/*": ["src/servicios/*"],
+      "@utilidad/*": ["src/utilidad/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@context/*": ["src/context/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
