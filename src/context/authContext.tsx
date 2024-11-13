@@ -13,7 +13,7 @@ const AuthContext = createContext<{
     cargando: boolean;
     login: (credentials: any) => Promise<any>;
     logout: () => void;
-    checkAuth: () => Promise<void>;
+    checkAuth: () => Promise<any | null | undefined>;
 } | null>(null);
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
@@ -28,7 +28,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
                 // Verificar la validez del token con el backend
                 const response = await funcionesGenerales.peticionJson('/auth/verify');
-                setUser(response.data.user);
+                setUser(response.data);
+                return user;
             }
         } catch (error) {
             localStorage.removeItem('token');
@@ -39,8 +40,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     };
 
     const login = async (credentials: LoginCredentials) => {
+        setCargando(true);
         const response = await funcionesGenerales.peticionJson('/auth/login', "POST", credentials);
         const {data, mensaje, exito} = response;
+        setCargando(false);
         if (exito) {
             localStorage.setItem('token', data?.token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${data?.token}`;

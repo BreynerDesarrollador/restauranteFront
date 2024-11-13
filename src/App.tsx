@@ -14,14 +14,14 @@ import {RestauranteInterface} from '@/interfaces/RestauranteInterface'
 import {MaestrosInterface} from "@interfaces/MaestrosInterface";
 import FiltroRestauranteComponente from "@componentes/FiltroResturante";
 import Login from "@componentes/login";
+import {useAuth} from '@context/authContext'
 
 function App() {
     const [restaurantes, setRestaurantes] = useState<RestauranteInterface[]>([]);
     const [maestros, setMaestros] = useState<MaestrosInterface[]>([]);
     const [mostrarCargando, setMostrarCargando] = useState(false);
     const [modalInicioSesion, setModalInicioSesion] = useState(false);
-
-
+    let {checkAuth, user, logout} = useAuth();
     const handleShow = () => setModalInicioSesion(true);
     const handleClose = () => setModalInicioSesion(false);
     const consultarRestaurantes = async (buscar: string, categoria: string, ubicacion: string) => {
@@ -31,6 +31,7 @@ function App() {
             console.log(datos);
             setMostrarCargando(false);
             setRestaurantes(datos.data);
+            await checkAuth();
         } catch (err) {
             //setError(err);
         }
@@ -91,13 +92,28 @@ function App() {
                                     </div>
                                     <div className="login-button">
                                         <ul>
-                                            <li>
-                                                <button className="btn btn-light" onClick={handleShow}><i
-                                                    className="lni lni-enter"></i> Ingresar
-                                                </button>
-                                            </li>
+
                                             <Login show={modalInicioSesion} handleClose={handleClose}></Login>
-                                            <li><a href="#"><i className="lni lni-user"></i> Registrarme</a></li>
+                                            {
+                                                user == null ? (
+                                                    <>
+                                                        <li>
+                                                            <button className="btn btn-light" onClick={handleShow}><i
+                                                                className="lni lni-enter"></i> Ingresar
+                                                            </button>
+                                                        </li>
+                                                        <li><a href="#"><i className="lni lni-user"></i> Registrarme</a>
+                                                        </li>
+                                                    </>
+                                                ) : (
+                                                    <li>
+                                                        <button className="btn btn-light" onClick={logout}>
+                                                            <i className="lni lni-exit"></i> Cerrar Sesión
+                                                        </button>
+                                                    </li>
+                                                )
+                                            }
+
                                         </ul>
                                     </div>
                                 </nav>
