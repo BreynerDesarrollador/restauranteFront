@@ -1,16 +1,29 @@
-import axios from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import React, {FC, useState, createContext, useContext,} from "react";
 import {IRespuesta} from "@interfaces/IRespuesta";
 import {funcionesGenerales} from "@utilidad/funcionesGenerales";
+import Swal from 'sweetalert2';
+
+const APP_AUTH_LOCAL_STORAGE_KEY = (typeof process.env.APP_AUTH_LOCAL_STORAGE_KEY !== "undefined") ? process.env.APP_AUTH_LOCAL_STORAGE_KEY : "";
 
 interface LoginCredentials {
     usuario: string;
     clave: string;
 }
 
+interface datosRegistro {
+    usuario: string;
+    clave: string;
+    rol: string;
+    nombre: string;
+    celular: string;
+    correo: string;
+}
+
 const AuthContext = createContext<{
     user: any;
     cargando: boolean;
+    registrar: (data: datosRegistro) => Promise<any>;
     login: (credentials: any) => Promise<any>;
     logout: () => void;
     checkAuth: () => Promise<any | null | undefined>;
@@ -21,7 +34,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [cargando, setCargando] = useState(false);
     const checkAuth = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem(APP_AUTH_LOCAL_STORAGE_KEY);
             if (token) {
                 // Configura el token en los headers de Axios
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -32,20 +45,58 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
                 return user;
             }
         } catch (error) {
-            localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
+            eliminarSesion();
         } finally {
             setCargando(false);
         }
     };
+    const eliminarSesion = () => {
+        localStorage.removeItem(APP_AUTH_LOCAL_STORAGE_KEY);
+        delete axios.defaults.headers.common['Authorization'];
+    };
+    const registrar = async (datosRegistro: datosRegistro) => {
+        setCargando(true);
+        try {
+            const response = await funcionesGenerales.peticionJson(
+                '/auth/register',
+                "POST",
+                datosRegistro
+            );
+            const {data, mensaje, exito} = response;
 
+            if (exito) {
+                funcionesGenerales.mostrarMensaje(
+                    "success",
+                    "Registro exitoso",
+                    "Tu cuenta ha sido creada correctamente"
+                );
+                // Opcionalmente, puedes hacer login automático después del registro
+                return await login({
+                    usuario: datosRegistro.usuario,
+                    clave: datosRegistro.clave
+                });
+            } else {
+                funcionesGenerales.mostrarMensaje("warning", "", mensaje);
+                return null;
+            }
+        } catch (error) {
+            funcionesGenerales.mostrarMensaje(
+                "error",
+                "Error",
+                "Ocurrió un error durante el registro"
+            );
+            return null;
+        } finally {
+            setCargando(false);
+        }
+    };
     const login = async (credentials: LoginCredentials) => {
         setCargando(true);
         const response = await funcionesGenerales.peticionJson('/auth/login', "POST", credentials);
         const {data, mensaje, exito} = response;
         setCargando(false);
         if (exito) {
-            localStorage.setItem('token', data?.token);
+            localStorage.setItem(APP_AUTH_LOCAL_STORAGE_KEY, data?.token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${data?.token}`;
             setUser(data?.usuario);
             return user;
@@ -56,14 +107,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
-        delete axios.defaults.headers.common['Authorization'];
+        eliminarSesion();
         setUser(null);
     };
-
     const value = {
         user,
         cargando,
+        registrar,
         login,
         logout,
         checkAuth

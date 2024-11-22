@@ -40,4 +40,10 @@ export interface RestauranteInterface {
         tieneEstacionamiento: boolean;
         wifi: boolean;
     };
+    meGusta: boolean | false;
+    noMeGusta: boolean | false;
+    totalMeGusta: number | 0;
+    totalNoMeGusta: number | 0;
+    totalResenas: number | 0
+    estadisticas: any | []
 }

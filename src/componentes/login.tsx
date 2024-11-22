@@ -12,14 +12,13 @@ const Login: React.FC<LoginProps> = ({show, handleClose}) => {
         const [usuario, setUsername] = useState('');
         const [clave, setPassword] = useState('');
         const {login, cargando} = useAuth();
-        const navigate = useNavigate();
+        //const navigate = useNavigate();
 
-        const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
+        const onSubmit = async () => {
             const success = await login({usuario, clave});
-            console.log(success);
+            console.log("login");
             if (success?.id) {
-                navigate('/dashboard'); // O la ruta que desees después del login
+                //navigate('/dashboard'); // O la ruta que desees después del login
             }
         };
 
@@ -33,56 +32,53 @@ const Login: React.FC<LoginProps> = ({show, handleClose}) => {
                                     <h5 className="text-center text-3xl font-extrabold text-gray-900">
                                         Iniciar sesión
                                     </h5>
-                                    <form className="container-fluid mt-8 space-y-6" onSubmit={onSubmit}>
-                                        <div className="row">
-                                            <div className='col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group'>
-                                                <strong className="sr-only">
-                                                    Usuario
-                                                </strong>
-                                                <input
-                                                    id="username"
-                                                    name="username"
-                                                    type="text"
-                                                    required
-                                                    className="form-control appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                                    placeholder="Usuario"
-                                                    value={usuario}
-                                                    onChange={(e) => setUsername(e.target.value)}
-                                                />
-                                            </div>
+                                    <div className="row">
+                                        <div className='col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group'>
+                                            <strong className="sr-only">
+                                                Usuario
+                                            </strong>
+                                            <input
+                                                id="username"
+                                                name="username"
+                                                type="text"
+                                                required
+                                                className="form-control appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Usuario"
+                                                value={usuario}
+                                                onChange={(e) => setUsername(e.target.value)}
+                                            />
+                                        </div>
 
-                                            <div className='col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group'>
-                                                <strong className="sr-only">
-                                                    Contraseña
-                                                </strong>
-                                                <input
-                                                    id="password"
-                                                    name="password"
-                                                    type="password"
-                                                    required
-                                                    className="form-control appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                                    placeholder="Contraseña"
-                                                    value={clave}
-                                                    onChange={(e) => setPassword(e.target.value)}
-                                                />
-                                            </div>
+                                        <div className='col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group'>
+                                            <strong className="sr-only">
+                                                Contraseña
+                                            </strong>
+                                            <input
+                                                id="password"
+                                                name="password"
+                                                type="password"
+                                                required
+                                                className="form-control appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Contraseña"
+                                                value={clave}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                            />
+                                        </div>
+                                        <div
+                                            className='col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group text-center'>
                                             <div
-                                                className='col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group text-center'>
-                                                <button
-                                                    type="submit"
-                                                    disabled={cargando}
-                                                    className="btn btn-primary"
-                                                >
-                                                    {cargando ? 'Cargando...' : 'Iniciar sesión'}
-                                                </button>
+                                                onClick={onSubmit}
+
+                                                className="btn btn-primary"
+                                            >
+                                                <p>{cargando ? 'Cargando...' : 'Iniciar sesión'}</p>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </Modal.Body>
             </Modal>
         );

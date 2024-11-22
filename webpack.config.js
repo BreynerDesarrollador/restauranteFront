@@ -1,8 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Dotenv = require('dotenv-webpack');
-const webpack = require('webpack');
 const path = require('path');
+
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
 
@@ -12,41 +12,42 @@ module.exports = (env, argv) => {
         output: {
             path: path.resolve(__dirname, 'dist'),
             filename: 'bundle.js',
+            publicPath: '/', // Importante para aplicaciones SPA
         },
         resolve: {
-            extensions: ['.ts', '.tsx', '.js'], // Asegúrate de incluir .tsx
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.css'],
             alias: {
                 '@': path.resolve(__dirname, './src'),
                 '@componentes': path.resolve(__dirname, './src/componentes'),
-                //'@pages': path.resolve(__dirname, './src/pages'),
                 '@assets': path.resolve(__dirname, './src/assets'),
                 '@hooks': path.resolve(__dirname, './src/hooks'),
                 '@services': path.resolve(__dirname, './src/servicios'),
                 '@utilidad': path.resolve(__dirname, './src/utilidad'),
                 '@interfaces': path.resolve(__dirname, './src/interfaces'),
                 '@context': path.resolve(__dirname, './src/context'),
-                //'@styles': path.resolve(__dirname, './src/styles')
             },
-            fallback: {
-                "process": require.resolve("process/browser")
-            }
         },
         module: {
             rules: [
                 {
-                    test: /\.tsx?$/, // Para archivos .ts y .tsx
+                    test: /\.tsx?$/,
                     use: 'ts-loader',
                     exclude: /node_modules/,
                 },
                 {
-                    test: /\.css$/, // Para manejar archivos CSS
-                    use: ['style-loader', 'css-loader'],
+                    test: /\.css$/,
+                    use: [
+                        isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+                        'css-loader',
+                        'postcss-loader',
+                    ],
                 },
                 {
                     test: /\.scss$/,
                     use: [
-                        MiniCssExtractPlugin.loader,
+                        isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
                         'css-loader',
+                        'postcss-loader',
                         {
                             loader: 'sass-loader',
                             options: {
@@ -55,22 +56,46 @@ module.exports = (env, argv) => {
                         },
                     ],
                 },
+                {
+                    test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                    type: 'asset/resource',
+                },
+                {
+                    test: /\.(woff|woff2|eot|ttf|otf)$/i,
+                    type: 'asset/resource',
+                },
             ],
         },
         plugins: [
             new HtmlWebpackPlugin({
                 template: './public/index.html',
+                //favicon: './public/favicon.ico', // Opcional
             }),
-            // Agrega estos plugins
             new Dotenv({
                 path: isProduction ? '.env.production' : '.env',
-                systemvars: true,
+                systemvars: true, // Permite el uso de variables del sistema también
                 safe: true,
-                defaults: false
+                defaults: false,
+            }),
+            new MiniCssExtractPlugin({
+                filename: isProduction ? '[name].[contenthash].css' : '[name].css',
             }),
         ],
         devServer: {
             static: './dist',
+            historyApiFallback: true, // Importante para SPAs
+            port: 8080,
+            open: true,
+            hot: true,
         },
-    }
+        devtool: isProduction ? 'source-map' : 'inline-source-map',
+        optimization: {
+            ...(isProduction && {
+                minimize: true,
+                splitChunks: {
+                    chunks: 'all',
+                },
+            }),
+        },
+    };
 };
