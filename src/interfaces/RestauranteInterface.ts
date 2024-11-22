@@ -33,6 +33,7 @@ export interface RestauranteInterface {
     };
     ubicacion: Ubicacion;
     menu: MenuItem[];
+    imagenPrincipal: string;
     imagenes: string[];
     caracteristicas: {
         tieneDelivery: boolean;

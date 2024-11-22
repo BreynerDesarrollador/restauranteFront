@@ -17,11 +17,19 @@ const DetalleRestaurante: React.FC<RestaurantProps> = ({mostrar, cerrar, datos, 
         <Modal show={mostrar} onHide={cerrar} size='xl'>
             <Modal.Body>
                 <div className="row">
+                    {/*<div className="card mb-3">
+                        <img src={datos.imagenPrincipal} className="card-img-top" alt="..."></img>
+                        <div className="card-body">
+                            <h5 className="card-title">Card title</h5>
+                            <p className="card-text">This is a wider card with supporting text below as a natural
+                                lead-in to additional content. This content is a little bit longer.</p>
+                        </div>
+                    </div>*/}
                     <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12 form-group">
                         <div className="card mb-3 bg-white rounded-lg shadow">
                             <div className="row g-0">
                                 <div className="col-md-4">
-                                    <img src={datos.imagenes[0]} className="img-fluid rounded-start"
+                                    <img src={datos.imagenPrincipal} className="img-fluid rounded-start"
                                          alt="..."></img>
                                 </div>
                                 <div className="col-md-8">

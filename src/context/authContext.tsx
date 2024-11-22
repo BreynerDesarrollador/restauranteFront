@@ -21,7 +21,7 @@ interface datosRegistro {
 }
 
 const AuthContext = createContext<{
-    user: any;
+    usuario: any | undefined;
     cargando: boolean;
     registrar: (data: datosRegistro) => Promise<any>;
     login: (credentials: any) => Promise<any>;
@@ -30,7 +30,7 @@ const AuthContext = createContext<{
 } | null>(null);
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    const [user, setUser] = useState(null);
+    const [usuario, setUsuario] = useState(null);
     const [cargando, setCargando] = useState(false);
     const checkAuth = async () => {
         try {
@@ -41,8 +41,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
                 // Verificar la validez del token con el backend
                 const response = await funcionesGenerales.peticionJson('/auth/verify');
-                setUser(response.data);
-                return user;
+                setUsuario(response.data);
+                return usuario;
             }
         } catch (error) {
             eliminarSesion();
@@ -98,8 +98,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
         if (exito) {
             localStorage.setItem(APP_AUTH_LOCAL_STORAGE_KEY, data?.token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${data?.token}`;
-            setUser(data?.usuario);
-            return user;
+            setUsuario(data?.usuario);
+            return usuario;
         } else {
             funcionesGenerales.mostrarMensaje("warning", "", mensaje);
         }
@@ -108,10 +108,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
     const logout = () => {
         eliminarSesion();
-        setUser(null);
+        setUsuario(null);
     };
     const value = {
-        user,
+        usuario,
         cargando,
         registrar,
         login,

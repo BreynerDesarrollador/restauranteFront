@@ -19,7 +19,7 @@ function App() {
     const [mostrarCargando, setMostrarCargando] = useState(false);
     const [modalInicioSesion, setModalInicioSesion] = useState(false);
     const [modalVerRestaunte, setModalVerRestaunte] = useState(false);
-    let {checkAuth, user, logout} = useAuth();
+    let {checkAuth, usuario, logout} = useAuth();
     const [showRegisterModal, setShowRegisterModal] = useState(false);
 
     const handleShowModal = () => setShowRegisterModal(true);
@@ -109,7 +109,7 @@ function App() {
 
                                             <Login show={modalInicioSesion} handleClose={handleClose}></Login>
                                             {
-                                                user == null ? (
+                                                usuario == null ? (
                                                     <>
                                                         <li>
                                                             <button className="btn btn-light" onClick={handleShow}><i
@@ -118,7 +118,7 @@ function App() {
                                                         </li>
                                                         <li>
                                                             <button className="btn btn-light" onClick={handleShowModal}>
-                                                                <i className="lni lni-user"></i> Registrarme
+                                                                <i className="lni lni-usuario"></i> Registrarme
                                                             </button>
                                                             <RegistroUsuario
                                                                 show={showRegisterModal}
@@ -176,15 +176,15 @@ function App() {
                     <div className="single-head">
                         <div className="row">
                             <DetalleRestaurante mostrar={modalVerRestaunte} cerrar={modalCerrar}
-                                                datos={detalleRestaurante} usuario={user}></DetalleRestaurante>
+                                                datos={detalleRestaurante} usuario={usuario}></DetalleRestaurante>
                             {restaurantes.map((item) => (
                                 <div className="col-lg-4 col-md-6 col-12">
 
                                     <div className="single-grid wow fadeInUp" data-wow-delay=".4s">
-                                        <div className="image">
-                                            <span onClick={() => consultarDetalleRestaurante(item.id)}
+                                        <div onClick={() => consultarDetalleRestaurante(item.id)}  className="image">
+                                            <span
                                                   className="thumbnail"><img
-                                                src="assets/images/items-grid/img2.jpg" alt="#"></img></span>
+                                                src={item.imagenPrincipal} alt="#"></img></span>
                                             <div className="author">
                                                 {/*<div className="author-image">
                                                     <a href="javascript:void(0)"><img
